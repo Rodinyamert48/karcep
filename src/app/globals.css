@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+/* Tema değişkenleri: varsayılan koyu, isteğe bağlı açık tema. */
+:root {
+  --k-bg: #0a1020;
+  --k-surface: #111a2e;
+  --k-surface-2: #17223a;
+  --k-surface-3: #1e2b47;
+  --k-border: #26334f;
+  --k-border-strong: #3a4a6b;
+  --k-text: #e8edf6;
+  --k-muted: #9fadc4;
+  --k-subtle: #7d8ba3;
+  --k-accent: #fbbf24;
+  --k-accent-strong: #f59e0b;
+  --k-on-accent: #1a1300;
+  --k-success: #34d399;
+  --k-success-bg: rgba(52, 211, 153, 0.12);
+  --k-danger: #f87171;
+  --k-danger-bg: rgba(248, 113, 113, 0.12);
+  --k-warning: #fb923c;
+  --k-warning-bg: rgba(251, 146, 60, 0.12);
+  --k-info: #60a5fa;
+  --k-info-bg: rgba(96, 165, 250, 0.12);
+  --k-focus: #fde68a;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --k-bg: #f4f6fa;
+  --k-surface: #ffffff;
+  --k-surface-2: #f1f4f9;
+  --k-surface-3: #e6ebf3;
+  --k-border: #d6dde9;
+  --k-border-strong: #b5c0d3;
+  --k-text: #0f172a;
+  --k-muted: #475569;
+  --k-subtle: #5b6b82;
+  --k-accent: #d97706;
+  --k-accent-strong: #b45309;
+  --k-on-accent: #ffffff;
+  --k-success: #047857;
+  --k-success-bg: rgba(4, 120, 87, 0.1);
+  --k-danger: #b91c1c;
+  --k-danger-bg: rgba(185, 28, 28, 0.08);
+  --k-warning: #b45309;
+  --k-warning-bg: rgba(180, 83, 9, 0.1);
+  --k-info: #1d4ed8;
+  --k-info-bg: rgba(29, 78, 216, 0.08);
+  --k-focus: #b45309;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--k-bg);
+  --color-surface: var(--k-surface);
+  --color-surface-2: var(--k-surface-2);
+  --color-surface-3: var(--k-surface-3);
+  --color-line: var(--k-border);
+  --color-line-strong: var(--k-border-strong);
+  --color-fg: var(--k-text);
+  --color-muted: var(--k-muted);
+  --color-subtle: var(--k-subtle);
+  --color-accent: var(--k-accent);
+  --color-accent-strong: var(--k-accent-strong);
+  --color-on-accent: var(--k-on-accent);
+  --color-success: var(--k-success);
+  --color-success-bg: var(--k-success-bg);
+  --color-danger: var(--k-danger);
+  --color-danger-bg: var(--k-danger-bg);
+  --color-warning: var(--k-warning);
+  --color-warning-bg: var(--k-warning-bg);
+  --color-info: var(--k-info);
+  --color-info-bg: var(--k-info-bg);
+  --color-focus: var(--k-focus);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans",
+    sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--k-bg);
+  color: var(--k-text);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+:focus-visible {
+  outline: 2px solid var(--k-focus);
+  outline-offset: 2px;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

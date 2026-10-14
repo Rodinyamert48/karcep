@@ -2,7 +2,11 @@ name: GitHub Pages'e yayınla
 
 on:
   push:
-    branches: [main]
+    # Pages'in github-pages ortamı yalnızca deponun gerçek varsayılan dalından deploy'a izin
+    # veriyor (bkz. README "Bilinen GitHub ayarı notu"). O dal main değilse buraya da ekleyin;
+    # main'den gelen push'lar burada tetiklenmez (environment protection tarafından reddedilip
+    # "cancelled" görünmesini önlemek için).
+    branches: [claude/sharp-gauss-3g202f]
   workflow_dispatch:
 
 permissions:

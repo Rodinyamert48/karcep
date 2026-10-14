@@ -5,6 +5,7 @@ import type { CalcResult } from "@/engine";
 import {
   MAX_HISTORY,
   clearAll,
+  commitAppData,
   createBrowserStore,
   defaultAppData,
   loadAppData,
@@ -44,7 +45,8 @@ export interface DataApi {
   deleteCommissionProfile: (id: string) => void;
   updateSettings: (patch: Partial<Settings>) => void;
   setScenarios: (s: ScenarioState) => void;
-  replaceAll: (data: AppData) => void;
+  /** Döndürülen değer, yazmanın depolamaya başarıyla uygulanıp uygulanmadığını bildirir. */
+  replaceAll: (data: AppData) => boolean;
   resetAll: () => void;
 }
 
@@ -209,7 +211,25 @@ export function DataProvider({ children, store: injected }: { children: ReactNod
   );
   const setScenarios = useCallback((s: ScenarioState) => patch("scenarios", () => s), [patch]);
 
-  const replaceAll = useCallback((next: AppData) => setData(next), []);
+  /**
+   * Büyük bir veri değişimini (yedek/JSON geri yükleme) güvenli biçimde uygular: önce
+   * depolamaya atomik yazmayı dener (`commitAppData`), yalnızca başarılı olursa uygulama
+   * durumunu günceller. Yazma başarısız olursa mevcut veri korunur ve bu açıkça bildirilir.
+   */
+  const replaceAll = useCallback((next: AppData): boolean => {
+    const store = storeRef.current;
+    if (!store) {
+      setData(next);
+      return true;
+    }
+    const result = commitAppData(store, next);
+    if (result.ok) {
+      savedRef.current = next;
+      setData(next);
+      return true;
+    }
+    return false;
+  }, []);
 
   const resetAll = useCallback(() => {
     const store = storeRef.current;

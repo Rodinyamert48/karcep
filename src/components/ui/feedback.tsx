@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { AlertTriangle, CheckCircle2, Info, X, XCircle } from "lucide-react";
 import { Button, cx } from "./primitives";
 
@@ -104,7 +105,7 @@ export function useFeedback(): FeedbackApi {
   return ctx;
 }
 
-/* ---------- Onay penceresi ---------- */
+/* ---------- Onay penceresi (Radix AlertDialog) ---------- */
 
 function ConfirmDialog({
   title,
@@ -114,73 +115,52 @@ function ConfirmDialog({
   danger,
   onClose,
 }: ConfirmOptions & { onClose: (v: boolean) => void }) {
-  const cancelRef = useRef<HTMLButtonElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
-    // Yanlışlıkla onaylamayı önlemek için odak "Vazgeç" düğmesinde başlar.
-    cancelRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        e.preventDefault();
-        onClose(false);
-      }
-      if (e.key === "Tab" && panelRef.current) {
-        const focusables = panelRef.current.querySelectorAll<HTMLElement>("button");
-        const first = focusables[0];
-        const last = focusables[focusables.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      previous?.focus?.();
-    };
-  }, [onClose]);
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onMouseDown={() => onClose(false)}>
-      <div
-        ref={panelRef}
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby="confirm-title"
-        aria-describedby="confirm-message"
-        onMouseDown={(e) => e.stopPropagation()}
-        className="w-full max-w-md rounded-xl border border-line-strong bg-surface p-5 shadow-2xl"
-      >
-        <div className="flex items-start gap-3">
-          {danger && (
-            <span className="rounded-full bg-danger-bg p-2 text-danger" aria-hidden="true">
-              <AlertTriangle className="size-5" />
-            </span>
-          )}
-          <div className="min-w-0">
-            <h2 id="confirm-title" className="text-base font-semibold text-fg">
-              {title}
-            </h2>
-            <div id="confirm-message" className="mt-1 text-sm text-muted">
-              {message}
+    <AlertDialog.Root
+      open
+      onOpenChange={(open) => {
+        if (!open) onClose(false);
+      }}
+    >
+      <AlertDialog.Portal>
+        <AlertDialog.Overlay className="k-overlay fixed inset-0 z-50 bg-black/60" />
+        <AlertDialog.Content
+          className="k-dialog fixed top-1/2 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border border-line-strong bg-surface p-5 shadow-2xl focus:outline-none"
+          // Radix odağı ilk etkileşimli öğeye taşır; yanlışlıkla onaylamayı önlemek için
+          // "Vazgeç" önce gelir (bkz. JSX sırası), bu yüzden varsayılan odak güvenlidir.
+          onOpenAutoFocus={(e) => {
+            const cancel = (e.currentTarget as HTMLElement).querySelector<HTMLElement>("[data-cancel]");
+            if (cancel) {
+              e.preventDefault();
+              cancel.focus();
+            }
+          }}
+        >
+          <div className="flex items-start gap-3">
+            {danger && (
+              <span className="rounded-full bg-danger-bg p-2 text-danger" aria-hidden="true">
+                <AlertTriangle className="size-5" />
+              </span>
+            )}
+            <div className="min-w-0">
+              <AlertDialog.Title className="text-base font-semibold text-fg">{title}</AlertDialog.Title>
+              <AlertDialog.Description className="mt-1 text-sm text-muted">{message}</AlertDialog.Description>
             </div>
           </div>
-        </div>
-        <div className="mt-5 flex flex-wrap justify-end gap-2">
-          <Button ref={cancelRef} onClick={() => onClose(false)}>
-            {cancelLabel}
-          </Button>
-          <Button variant={danger ? "danger" : "primary"} onClick={() => onClose(true)}>
-            {confirmLabel}
-          </Button>
-        </div>
-      </div>
-    </div>
+          <div className="mt-5 flex flex-wrap justify-end gap-2">
+            <AlertDialog.Cancel asChild>
+              <Button data-cancel onClick={() => onClose(false)}>
+                {cancelLabel}
+              </Button>
+            </AlertDialog.Cancel>
+            <AlertDialog.Action asChild>
+              <Button variant={danger ? "danger" : "primary"} onClick={() => onClose(true)}>
+                {confirmLabel}
+              </Button>
+            </AlertDialog.Action>
+          </div>
+        </AlertDialog.Content>
+      </AlertDialog.Portal>
+    </AlertDialog.Root>
   );
 }

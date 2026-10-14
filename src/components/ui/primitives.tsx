@@ -1,47 +1,42 @@
 "use client";
 
 import { forwardRef, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/cn";
 
-export function cx(...parts: (string | false | null | undefined)[]): string {
-  return parts.filter(Boolean).join(" ");
-}
+/** Geriye dönük uyumluluk için: proje genelinde `cx` adıyla içe aktarılan birleştirici, artık shadcn/ui'nin `cn()` yardımcısına dayanır. */
+export const cx = cn;
 
-type Variant = "primary" | "secondary" | "ghost" | "danger";
-type Size = "sm" | "md";
+export const buttonVariants = cva(
+  "inline-flex shrink-0 items-center justify-center rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-focus focus-visible:outline-offset-2",
+  {
+    variants: {
+      variant: {
+        primary: "border border-transparent bg-accent font-semibold text-on-accent hover:bg-accent-strong",
+        secondary: "border border-line bg-surface-2 text-fg hover:border-line-strong hover:bg-surface-3",
+        outline: "border border-line-strong bg-transparent text-fg hover:bg-surface-2",
+        ghost: "border border-transparent bg-transparent text-muted hover:bg-surface-2 hover:text-fg",
+        danger: "border border-danger/40 bg-danger-bg text-danger hover:border-danger",
+      },
+      size: {
+        sm: "h-8 gap-1.5 px-2.5 text-sm",
+        md: "h-10 gap-2 px-3.5 text-sm",
+      },
+    },
+    defaultVariants: { variant: "secondary", size: "md" },
+  },
+);
 
-const VARIANTS: Record<Variant, string> = {
-  primary: "bg-accent text-on-accent hover:bg-accent-strong border border-transparent font-semibold",
-  secondary: "bg-surface-2 text-fg border border-line hover:border-line-strong hover:bg-surface-3",
-  ghost: "bg-transparent text-muted border border-transparent hover:text-fg hover:bg-surface-2",
-  danger: "bg-danger-bg text-danger border border-danger/40 hover:border-danger",
-};
-const SIZES: Record<Size, string> = {
-  sm: "h-8 px-2.5 text-sm gap-1.5",
-  md: "h-10 px-3.5 text-sm gap-2",
-};
-
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: Variant;
-  size?: Size;
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   icon?: ReactNode;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant = "secondary", size = "md", icon, className, children, type = "button", ...rest },
+  { variant, size, icon, className, children, type = "button", ...rest },
   ref,
 ) {
   return (
-    <button
-      ref={ref}
-      type={type}
-      className={cx(
-        "inline-flex shrink-0 items-center justify-center rounded-lg transition-colors disabled:cursor-not-allowed disabled:opacity-50",
-        VARIANTS[variant],
-        SIZES[size],
-        className,
-      )}
-      {...rest}
-    >
+    <button ref={ref} type={type} className={cn(buttonVariants({ variant, size }), className)} {...rest}>
       {icon}
       {children}
     </button>

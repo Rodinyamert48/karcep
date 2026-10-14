@@ -63,7 +63,7 @@ describe("yerel depolama", () => {
     expect(data.draft.values.mode).toBe("vat");
     expect(data.draft.values.saleIncludesVat).toBe(true);
     expect(data.settings.defaultMode).toBe("quick");
-    expect(data.settings.theme).toBe("dark");
+    expect(data.settings.theme).toBe("system");
   });
 
   it("yerleşik pazaryerleri silinmiş olsa bile geri gelir", () => {

@@ -142,8 +142,10 @@ export interface CalcCore {
   /** KDV modunda: çıktı KDV − indirilebilir KDV. Negatifse devreden KDV. */
   vatBalance: Kurus;
   profit: Kurus;
-  /** Yüzde olarak kâr marjı; gelir sıfırsa null. */
+  /** Yüzde olarak kâr marjı (Kâr / Satış geliri × 100); gelir sıfırsa null. */
   marginPercent: number | null;
+  /** Maliyet üzerine kâr oranı / markup (Kâr / Alış maliyeti × 100); kâr marjından farklıdır. Maliyet sıfırsa null. */
+  costMarkupPercent: number | null;
   status: "profit" | "loss" | "breakeven";
 }
 

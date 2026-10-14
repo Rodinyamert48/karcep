@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
+import * as RadixSwitch from "@radix-ui/react-switch";
 import { AlertCircle, Info } from "lucide-react";
 import { cx } from "./primitives";
 
@@ -207,27 +208,24 @@ export function Switch({
   const id = idProp ?? autoId;
   return (
     <div className="flex items-start gap-3">
-      <button
+      <RadixSwitch.Root
         id={id}
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        aria-describedby={description ? `${id}-desc` : undefined}
+        checked={checked}
+        onCheckedChange={onChange}
         disabled={disabled}
-        onClick={() => onChange(!checked)}
+        aria-describedby={description ? `${id}-desc` : undefined}
         className={cx(
           "relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full border transition-colors disabled:opacity-50",
           checked ? "border-accent bg-accent" : "border-line-strong bg-surface-3",
         )}
       >
-        <span
-          aria-hidden="true"
+        <RadixSwitch.Thumb
           className={cx(
-            "inline-block size-3.5 rounded-full shadow transition-transform",
+            "block size-3.5 rounded-full shadow transition-transform",
             checked ? "translate-x-4 bg-on-accent" : "translate-x-0.5 bg-muted",
           )}
         />
-      </button>
+      </RadixSwitch.Root>
       <div className="min-w-0">
         <label htmlFor={id} className="cursor-pointer text-sm text-fg">
           {label}
@@ -318,7 +316,10 @@ export function InfoTip({ label, children }: { label: string; children: ReactNod
         aria-label={`Bilgi: ${label}`}
         aria-expanded={open}
         aria-describedby={open ? id : undefined}
-        onClick={() => setOpen((o) => !o)}
+        // Not toggle: fareyle üzerine gelmek zaten açar; tıklama (mouseenter'dan hemen sonra gelen
+        // click olayı) bunu kapatıp açmasın diye her zaman açık bırakır. Kapatma; Escape, dışarı
+        // tıklama, fareyi çekme veya odağın çıkmasıyla olur.
+        onClick={() => setOpen(true)}
         onMouseEnter={() => setOpen(true)}
         onBlur={() => setOpen(false)}
         className="rounded-full p-0.5 text-subtle hover:text-fg"

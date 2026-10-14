@@ -16,8 +16,19 @@
 - [x] lint + typecheck + test + build; Chromium'da uçtan uca kontrol
 - [x] README, GitHub Pages iş akışı, bilinen sınırlamalar
 
+## v0.2.0 — Tasarım sistemi, .krcp yedekleme, doğrulama (tamamlandı)
+- [x] shadcn/ui tarzı tasarım sistemi: Radix UI (Dialog/AlertDialog/Switch/Tabs) + class-variance-authority + clsx/tailwind-merge
+- [x] Lacivert/yeşil marka paleti (WCAG AA kontrast doğrulandı), "Sistem" tema seçeneği + canlı OS tema izleme
+- [x] `.krcp` yedekleme/geri yükleme: doğrulama, önizleme, Değiştir/Birleştir stratejileri, atomik yazma + geri alma
+- [x] Hakkında ve Gizlilik: 5 sekmeli yapı (Hakkında, Gizlilik, Yedekleme, Kullanım Koşulları, Sürüm ve İletişim)
+- [x] Hesaplama motoruna "maliyet üzerine kâr oranı" (markup) eklendi, kâr marjından ayrıştırıldı
+- [x] SEO: robots.txt, sitemap.xml, Open Graph/Twitter meta, canonical
+- [x] 94 otomatik test (motor 64, depolama+krcp 28, arayüz 2); lint + typecheck + build temiz
+
 ## Sonraki adımlar (isteğe bağlı)
 - [ ] Chrome MV3 eklentisi: `src/engine`'i kullanan bağımsız popup (yalnızca manuel girdi, ek izin yok)
 - [ ] Kargo baremleri / kademeli komisyon desteği
 - [ ] İade/iptal oranı gibi beklenen-değer giderleri
 - [ ] Geçmiş büyüdükçe IndexedDB'ye geçiş (KeyValueStore arayüzü hazır)
+- [ ] `.krcp` için isteğe bağlı parola korumalı (Web Crypto) şifreleme
+- [ ] Gerçek bir veri sorumlusu/iletişim bilgisi netleşirse KVKK aydınlatma metninin güncellenmesi

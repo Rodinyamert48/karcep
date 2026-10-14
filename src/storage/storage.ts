@@ -98,7 +98,7 @@ function readJson(store: KeyValueStore, key: string, issues: string[], label: st
  * Şema migrasyonları: anahtar, kaynak sürüm. Her fonksiyon ham koleksiyonları bir sonraki sürüme taşır.
  * Şu an yalnızca v1 var; yeni sürümde buraya eklenir.
  */
-type RawCollections = Partial<Record<CollectionKey, unknown>>;
+export type RawCollections = Partial<Record<CollectionKey, unknown>>;
 const MIGRATIONS: Record<number, (raw: RawCollections) => RawCollections> = {
   // 1: (raw) => ({ ...raw, ... }),  // v1 → v2 örneği
 };
@@ -175,6 +175,61 @@ export function saveCollection<K extends CollectionKey>(store: KeyValueStore, ke
 
 export function saveAll(store: KeyValueStore, data: AppData): boolean {
   return COLLECTIONS.every((c) => saveCollection(store, c, data[c]));
+}
+
+/**
+ * Büyük, tek seferlik bir veri değişimini (yedek geri yükleme, içe aktarma) mümkün olduğunca
+ * atomik biçimde uygular. localStorage çoklu anahtar yazımlarında gerçek bir işlem (transaction)
+ * sunmaz; bu yüzden önce tüm değerler serileştirilir (bir serileştirme hatası hiçbir şey
+ * yazılmadan yakalanır), ardından yazılır. Yazma sırasında bir hata oluşursa (ör. depolama
+ * kotası dolması), o ana kadar değiştirilen anahtarlar yazımdan önceki değerlerine geri
+ * döndürülmeye çalışılır ve mevcut verinin korunup korunamadığı sonuçta bildirilir.
+ */
+export interface CommitResult {
+  ok: boolean;
+  /** Yazma başarısız olduysa: önceki veri eksiksiz geri yüklenebildi mi? */
+  rolledBack?: boolean;
+}
+
+export function commitAppData(store: KeyValueStore, next: AppData): CommitResult {
+  let entries: [string, string][];
+  try {
+    entries = COLLECTIONS.map((c) => [collectionKey(c), JSON.stringify(next[c])]);
+    entries.push([META_KEY, JSON.stringify({ schemaVersion: SCHEMA_VERSION })]);
+  } catch {
+    // Hiçbir şey yazılmadı; mevcut veri olduğu gibi kalır.
+    return { ok: false, rolledBack: true };
+  }
+
+  const snapshot = new Map<string, string | null>();
+  for (const [key] of entries) {
+    try {
+      snapshot.set(key, store.get(key));
+    } catch {
+      snapshot.set(key, null);
+    }
+  }
+
+  const written: string[] = [];
+  try {
+    for (const [key, value] of entries) {
+      store.set(key, value);
+      written.push(key);
+    }
+    return { ok: true };
+  } catch {
+    let rolledBack = true;
+    for (const key of written) {
+      const prev = snapshot.get(key) ?? null;
+      try {
+        if (prev === null) store.remove(key);
+        else store.set(key, prev);
+      } catch {
+        rolledBack = false;
+      }
+    }
+    return { ok: false, rolledBack };
+  }
 }
 
 /** KârCep'e ait tüm anahtarları siler (bozuk yedekler dâhil). */

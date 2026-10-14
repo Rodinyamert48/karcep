@@ -1,19 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Database, Download, Pencil, Plus, Settings2, Store, Trash2, Upload, Percent } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, Database, Pencil, Plus, Settings2, Store, Trash2, Percent } from "lucide-react";
 import { parseScaled, type CommissionBase } from "@/engine";
-import {
-  exportAppData,
-  parseImport,
-  type CommissionProfile,
-  type MarketplaceProfile,
-  type ProfileOrigin,
-  type Settings,
-} from "@/storage";
-import { downloadText, newId } from "@/lib/browser";
+import { type CommissionProfile, type MarketplaceProfile, type ProfileOrigin, type Settings } from "@/storage";
+import { newId } from "@/lib/browser";
 import { formatDate, todayISO } from "@/lib/format";
 import { useData } from "@/state/DataProvider";
+import type { SectionId } from "@/state/navigation";
 import { ProfileSourceBadge, ProfileSourceDetail } from "../ProfileSource";
 import { BASE_LABELS } from "../Results";
 import { useFeedback } from "../ui/feedback";
@@ -34,10 +28,11 @@ function checkRate(v: string, required = false): string | undefined {
   return undefined;
 }
 
-export function SettingsSection() {
+export function SettingsSection({ navigate }: { navigate: (id: SectionId) => void }) {
   const { data } = useData();
-  const { theme: _theme, ...defaults } = data.settings;
+  const { theme: _theme, lastBackupAt: _lastBackupAt, ...defaults } = data.settings;
   void _theme;
+  void _lastBackupAt;
   return (
     <>
       <PageHeader
@@ -54,7 +49,7 @@ export function SettingsSection() {
         <Marketplaces />
         {/* Veri içe aktarılır veya silinirse form yeniden kurulur. */}
         <GeneralSettings key={JSON.stringify(defaults)} />
-        <DataManagement />
+        <DataManagement navigate={navigate} />
       </div>
     </>
   );
@@ -436,7 +431,7 @@ function GeneralSettings() {
     };
     setErrors(e);
     if (Object.values(e).some(Boolean)) return;
-    updateSettings({ ...form, theme: data.settings.theme });
+    updateSettings({ ...form, theme: data.settings.theme, lastBackupAt: data.settings.lastBackupAt });
     toast("Varsayılanlar kaydedildi. Yeni hesaplamalarda kullanılacak.");
   };
 
@@ -465,6 +460,7 @@ function GeneralSettings() {
           value={data.settings.theme}
           onChange={(v) => updateSettings({ theme: v })}
           options={[
+            { value: "system", label: "Sistem" },
             { value: "dark", label: "Koyu" },
             { value: "light", label: "Açık" },
           ]}
@@ -479,42 +475,9 @@ function GeneralSettings() {
 
 /* ---------------- Veri yönetimi ---------------- */
 
-function DataManagement() {
-  const { data, replaceAll, resetAll, persistent } = useData();
+function DataManagement({ navigate }: { navigate: (id: SectionId) => void }) {
+  const { resetAll, persistent } = useData();
   const { toast, confirm } = useFeedback();
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  const exportJson = () => {
-    try {
-      downloadText(`karcep-yedek-${todayISO()}.json`, exportAppData(data), "application/json");
-      toast("Yedek dosyası indirildi.");
-    } catch {
-      toast("Yedek dosyası oluşturulamadı.", "error");
-    }
-  };
-
-  const onFile = async (file: File | undefined) => {
-    if (!file) return;
-    if (file.size > 10 * 1024 * 1024) {
-      toast("Dosya çok büyük (en fazla 10 MB).", "error");
-      return;
-    }
-    const result = parseImport(await file.text());
-    if (fileRef.current) fileRef.current.value = "";
-    if (!result.ok) {
-      toast(result.message, "error");
-      return;
-    }
-    const ok = await confirm({
-      title: "Yedek geri yüklensin mi?",
-      message: `Mevcut tüm verilerin yerini yedekteki ${result.data.products.length} ürün, ${result.data.history.length} geçmiş kaydı ve ${result.data.commissionProfiles.length} komisyon profili alacak. Bu işlem geri alınamaz.`,
-      confirmLabel: "Geri yükle",
-      danger: true,
-    });
-    if (!ok) return;
-    replaceAll(result.data);
-    toast("Yedek geri yüklendi.");
-  };
 
   const wipe = async () => {
     const ok = await confirm({
@@ -539,24 +502,13 @@ function DataManagement() {
         )}
         <p className="text-sm text-muted">
           Tarayıcı verilerini (çerezler ve site verileri) temizlemek veya farklı bir tarayıcı/cihaz kullanmak kayıtlarınıza erişimi
-          kaldırır. Düzenli yedek almanız önerilir.
+          kaldırır. <strong className="text-fg">Hakkında ve Gizlilik → Yedekleme ve Geri Yükleme</strong> bölümünden düzenli olarak
+          `.krcp` yedeği alın.
         </p>
         <div className="flex flex-wrap gap-2">
-          <Button icon={<Download className="size-4" aria-hidden="true" />} onClick={exportJson}>
-            Tüm verileri dışa aktar (JSON)
+          <Button icon={<ArrowRight className="size-4" aria-hidden="true" />} onClick={() => navigate("hakkinda")}>
+            Yedekleme ve Geri Yükleme’ye git
           </Button>
-          <Button icon={<Upload className="size-4" aria-hidden="true" />} onClick={() => fileRef.current?.click()}>
-            Yedekten geri yükle
-          </Button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="application/json,.json"
-            className="sr-only"
-            tabIndex={-1}
-            aria-hidden="true"
-            onChange={(e) => onFile(e.target.files?.[0])}
-          />
           <Button variant="danger" icon={<Trash2 className="size-4" aria-hidden="true" />} onClick={wipe}>
             Tüm verileri sil
           </Button>

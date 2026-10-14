@@ -49,7 +49,8 @@ export const DEFAULT_SETTINGS: Settings = {
   defaultSaleVatRate: "20",
   defaultCostVatRate: "20",
   defaultServiceVatRate: "20",
-  theme: "dark",
+  theme: "system",
+  lastBackupAt: null,
 };
 
 export function emptyMeta(overrides: Partial<CalcMeta> = {}): CalcMeta {

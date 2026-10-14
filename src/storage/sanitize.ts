@@ -204,7 +204,8 @@ export function sanitizeSettings(raw: unknown): Settings {
     defaultSaleVatRate: str(raw.defaultSaleVatRate, DEFAULT_SETTINGS.defaultSaleVatRate, 16),
     defaultCostVatRate: str(raw.defaultCostVatRate, DEFAULT_SETTINGS.defaultCostVatRate, 16),
     defaultServiceVatRate: str(raw.defaultServiceVatRate, DEFAULT_SETTINGS.defaultServiceVatRate, 16),
-    theme: raw.theme === "light" ? "light" : "dark",
+    theme: raw.theme === "light" || raw.theme === "dark" ? raw.theme : "system",
+    lastBackupAt: typeof raw.lastBackupAt === "string" && !Number.isNaN(Date.parse(raw.lastBackupAt)) ? raw.lastBackupAt : null,
   };
 }
 

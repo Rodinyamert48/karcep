@@ -90,6 +90,10 @@ export function computeCore(input: CalcInput): CalcCore {
   const outputVat = isVat ? sale.vat : 0;
   const profit = revenue - totalExpense;
   const marginPercent = revenue > 0 ? (profit / revenue) * 100 : null;
+  // Maliyet üzerine kâr oranı (markup), kâr marjından farklıdır: payda satış geliri değil,
+  // yalnızca ürünün alış maliyetidir. Alış maliyeti 0 ise tanımsızdır (sıfıra bölme yok).
+  const costExpense = lines.find((l) => l.key === "cost")!.expense;
+  const costMarkupPercent = costExpense > 0 ? (profit / costExpense) * 100 : null;
 
   return {
     mode: input.mode,
@@ -106,6 +110,7 @@ export function computeCore(input: CalcInput): CalcCore {
     vatBalance: isVat ? outputVat - deductibleVatTotal : 0,
     profit,
     marginPercent,
+    costMarkupPercent,
     status: profit > 0 ? "profit" : profit < 0 ? "loss" : "breakeven",
   };
 }

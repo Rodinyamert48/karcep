@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { AlertTriangle } from "lucide-react";
+import { useAppliedTheme } from "@/lib/theme";
 import { DataProvider, useData } from "@/state/DataProvider";
 import { useSection, type SectionId } from "@/state/navigation";
 import type { KeyValueStore } from "@/storage";
@@ -31,9 +32,7 @@ function Root() {
   const { ready, data, loadIssues, saveError, persistent } = useData();
   const { toast } = useFeedback();
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = data.settings.theme;
-  }, [data.settings.theme]);
+  useAppliedTheme(data.settings.theme);
 
   useEffect(() => {
     if (saveError) toast("Veriler kaydedilemedi: tarayıcı depolama alanı dolu veya engellenmiş olabilir.", "error");
@@ -75,7 +74,7 @@ function Section({ id, navigate }: { id: SectionId; navigate: (id: SectionId) =>
     case "senaryolar":
       return <ScenariosSection navigate={navigate} />;
     case "ayarlar":
-      return <SettingsSection />;
+      return <SettingsSection navigate={navigate} />;
     case "gecmis":
       return <HistorySection navigate={navigate} />;
     case "hakkinda":

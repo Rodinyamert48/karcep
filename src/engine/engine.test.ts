@@ -332,6 +332,36 @@ describe("KDV ayrıştırmalı mod", () => {
   });
 });
 
+describe("kâr marjı ve maliyet üzerine kâr oranı birbirinden farklıdır", () => {
+  it("satış 100, maliyet 40, diğer gider yok: marj %60, markup %150", () => {
+    const r = calculate(quick({ salePrice: "100", costPrice: "40" }));
+    expect(r.profit).toBe(6000);
+    expect(r.marginPercent).toBeCloseTo(60, 10); // 60 / 100 × 100
+    expect(r.costMarkupPercent).toBeCloseTo(150, 10); // 60 / 40 × 100
+    expect(r.marginPercent).not.toBeCloseTo(r.costMarkupPercent!, 1);
+  });
+
+  it("alış maliyeti 0 ise maliyet üzerine kâr oranı tanımsızdır (sıfıra bölme yok)", () => {
+    const r = calculate(quick({ salePrice: "100", costPrice: "0" }));
+    expect(r.costMarkupPercent).toBeNull();
+    expect(r.marginPercent).toBe(100);
+  });
+
+  it("negatif kârda (zarar) maliyet üzerine kâr oranı da negatiftir", () => {
+    const r = calculate(quick({ salePrice: "50", costPrice: "60" }));
+    expect(r.profit).toBe(-1000);
+    expect(r.costMarkupPercent).toBeCloseTo((-1000 / 6000) * 100, 10);
+  });
+
+  it("KDV modunda markup, KDV hariç maliyet gidere göre hesaplanır", () => {
+    const r = calculate(
+      vat({ salePrice: "120", saleIncludesVat: true, saleVatRate: "20", costPrice: "60", costIncludesVat: true, costVatRate: "20", vatDeductible: true }),
+    );
+    // KDV hariç maliyet gideri = 50 TL; kâr = 100 (gelir) − 50 (maliyet) = 50 TL → markup %100
+    expect(r.costMarkupPercent).toBeCloseTo(100, 10);
+  });
+});
+
 describe("geçersiz veya eksik girişler", () => {
   it("boş form: hata yok ama eksik", () => {
     const v = validateForm(emptyFormValues());

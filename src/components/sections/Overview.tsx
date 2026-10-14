@@ -185,7 +185,7 @@ function Privacy() {
     <p className="mt-5 flex items-start gap-2 text-xs text-subtle">
       <ShieldCheck className="mt-0.5 size-3.5 shrink-0" aria-hidden="true" />
       Verileriniz yalnızca bu tarayıcıda saklanır, hiçbir sunucuya gönderilmez. Tarayıcı verilerini temizlemek kayıtlarınızı siler;
-      düzenli olarak <Badge className="mx-0.5">Ayarlar → Dışa aktar</Badge> ile yedek alın.
+      düzenli olarak <Badge className="mx-0.5">Hakkında ve Gizlilik → Yedekleme</Badge> ile `.krcp` yedeği alın.
     </p>
   );
 }

@@ -109,7 +109,14 @@ export function ResultMetrics({ result, saleIncludesVat, targetLabel }: { result
         tone={tone}
         value={formatPercent(result.marginPercent)}
         sub={result.marginPercent === null ? "Satış tutarı 0 olduğu için hesaplanamaz" : isVat ? "KDV hariç satışa göre" : "Satış fiyatına göre"}
-        info="Kâr marjı = Tahmini kâr / Satış tutarı × 100. KDV modunda satış tutarı KDV hariçtir."
+        info="Kâr marjı = Tahmini kâr / Satış tutarı × 100. Payda satış gelirdir. KDV modunda satış tutarı KDV hariçtir."
+      />
+      <Metric
+        label="Maliyet üzerine kâr oranı"
+        tone={tone}
+        value={formatPercent(result.costMarkupPercent)}
+        sub={result.costMarkupPercent === null ? "Alış maliyeti 0 olduğu için hesaplanamaz" : "Alış maliyetine göre (markup)"}
+        info="Maliyet üzerine kâr oranı = Tahmini kâr / Alış maliyeti × 100. Kâr marjından farkı: payda satış geliri değil, yalnızca ürünün alış maliyetidir. İki oran birbirine karıştırılmamalıdır."
       />
       <Metric
         label="Toplam gider"

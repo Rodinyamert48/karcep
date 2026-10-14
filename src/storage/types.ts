@@ -50,7 +50,9 @@ export interface Settings {
   defaultSaleVatRate: string;
   defaultCostVatRate: string;
   defaultServiceVatRate: string;
-  theme: "dark" | "light";
+  theme: "dark" | "light" | "system";
+  /** Son başarılı ".krcp" yedeği oluşturulma zamanı (ISO-8601); hiç yedek alınmadıysa null. */
+  lastBackupAt: string | null;
 }
 
 export interface CalcSummary {

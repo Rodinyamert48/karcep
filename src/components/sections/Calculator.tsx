@@ -502,7 +502,7 @@ export function CalculatorSection({ navigate }: { navigate: (id: SectionId) => v
                     </ul>
                   </Notice>
                 ) : (
-                  <p className="rounded-lg border border-dashed border-line px-4 py-8 text-center text-sm text-muted">
+                  <p className="rounded-md border border-dashed border-line px-4 py-8 text-center text-sm text-muted">
                     Sonuçları görmek için <strong className="text-fg">satış fiyatı</strong> ve <strong className="text-fg">alış maliyeti</strong> girin.
                   </p>
                 )}

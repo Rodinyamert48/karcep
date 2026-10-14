@@ -53,18 +53,17 @@ export function AboutSection() {
         description="KârCep, Türkiye'deki e-ticaret satıcıları için ücretsiz, tarayıcıda çalışan bir kârlılık hesaplayıcısıdır."
       />
       <Tabs.Root defaultValue="hakkinda" className="w-full">
-        <Tabs.List
-          aria-label="Hakkında ve gizlilik bölümleri"
-          className="mb-5 flex flex-wrap gap-1.5 rounded-xl border border-line bg-surface p-1.5"
-        >
+        <Tabs.List aria-label="Hakkında ve gizlilik bölümleri" className="mb-6 flex flex-wrap gap-x-6 gap-y-2 border-b border-line">
           {TABS.map((t) => (
             <Tabs.Trigger
               key={t.value}
               value={t.value}
               className={cx(
-                "inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors",
-                "hover:bg-surface-2 hover:text-fg",
-                "data-[state=active]:bg-accent data-[state=active]:text-on-accent data-[state=active]:font-semibold",
+                "relative inline-flex items-center gap-1.5 py-2.5 text-sm text-muted transition-colors",
+                "hover:text-fg",
+                "data-[state=active]:font-medium data-[state=active]:text-fg",
+                "after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:scale-x-0 after:bg-accent after:transition-transform",
+                "data-[state=active]:after:scale-x-100",
                 "focus-visible:outline-2 focus-visible:outline-focus focus-visible:outline-offset-2",
               )}
             >
@@ -395,7 +394,7 @@ function RestoreDialog({
         <Dialog.Overlay className="k-overlay fixed inset-0 z-50 bg-black/60" />
         <Dialog.Content
           aria-labelledby={titleId}
-          className="k-dialog fixed top-1/2 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-xl border border-line-strong bg-surface p-5 shadow-2xl focus:outline-none"
+          className="k-dialog fixed top-1/2 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-md border border-line-strong bg-surface p-5 shadow-2xl focus:outline-none"
         >
           <div className="flex items-start justify-between gap-3">
             <Dialog.Title id={titleId} className="text-base font-semibold text-fg">
@@ -412,7 +411,7 @@ function RestoreDialog({
             {!isPlaceholderDate && <>Oluşturulma tarihi: {formatDateTime(summary.createdAt)}</>}
           </Dialog.Description>
 
-          <dl className="mt-4 grid grid-cols-2 gap-3 rounded-lg border border-line bg-surface-2 p-3 text-sm sm:grid-cols-4">
+          <dl className="mt-4 grid grid-cols-2 gap-3 rounded-md border border-line bg-surface-2 p-3 text-sm sm:grid-cols-4">
             <Count label="Ürün" value={summary.counts.products} />
             <Count label="Geçmiş" value={summary.counts.history} />
             <Count label="Komisyon profili" value={summary.counts.commissionProfiles} />
@@ -421,14 +420,14 @@ function RestoreDialog({
 
           <div className="mt-4 space-y-2 text-sm">
             <p className="text-muted">Nasıl uygulansın?</p>
-            <div className="rounded-lg border border-line p-3">
+            <div className="rounded-md border border-line p-3">
               <p className="font-medium text-fg">Değiştir</p>
               <p className="text-xs text-muted">
                 Mevcut tüm verilerinizin ({current.products.length} ürün, {current.history.length} geçmiş kaydı) yerini yedekteki
                 veriler alır. Yedekte olmayan güncel kayıtlar kaybolur.
               </p>
             </div>
-            <div className="rounded-lg border border-line p-3">
+            <div className="rounded-md border border-line p-3">
               <p className="font-medium text-fg">Birleştir</p>
               <p className="text-xs text-muted">
                 Ürünler, geçmiş ve komisyon profilleri kimliğe göre birleştirilir (çakışmada yedekteki kazanır); yalnızca mevcutta olan

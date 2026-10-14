@@ -73,7 +73,7 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
             key={t.id}
             role={t.tone === "error" ? "alert" : "status"}
             className={cx(
-              "pointer-events-auto flex w-full max-w-sm items-start gap-2 rounded-lg border bg-surface-3 px-3 py-2.5 text-sm text-fg shadow-xl",
+              "pointer-events-auto flex w-full max-w-sm items-start gap-2 rounded-md border bg-surface-3 px-3 py-2.5 text-sm text-fg shadow-xl",
               t.tone === "success" && "border-success/40",
               t.tone === "error" && "border-danger/50",
               t.tone === "info" && "border-info/40",
@@ -125,7 +125,7 @@ function ConfirmDialog({
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="k-overlay fixed inset-0 z-50 bg-black/60" />
         <AlertDialog.Content
-          className="k-dialog fixed top-1/2 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border border-line-strong bg-surface p-5 shadow-2xl focus:outline-none"
+          className="k-dialog fixed top-1/2 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-md border border-line-strong bg-surface p-5 shadow-2xl focus:outline-none"
           // Radix odağı ilk etkileşimli öğeye taşır; yanlışlıkla onaylamayı önlemek için
           // "Vazgeç" önce gelir (bkz. JSX sırası), bu yüzden varsayılan odak güvenlidir.
           onOpenAutoFocus={(e) => {

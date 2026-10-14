@@ -6,7 +6,7 @@ import { AlertCircle, Info } from "lucide-react";
 import { cx } from "./primitives";
 
 const inputBase =
-  "w-full min-w-0 rounded-lg border bg-surface-2 px-3 text-sm text-fg placeholder:text-subtle transition-colors hover:border-line-strong focus:border-accent focus:outline-none focus-visible:outline-2 focus-visible:outline-focus disabled:opacity-60";
+  "w-full min-w-0 rounded-md border bg-surface-2 px-3 text-sm text-fg placeholder:text-subtle transition-colors hover:border-line-strong focus:border-accent focus:outline-none focus-visible:outline-2 focus-visible:outline-focus disabled:opacity-60";
 
 export interface FieldShellProps {
   id: string;
@@ -258,7 +258,7 @@ export function Segmented<T extends string>({
   return (
     <fieldset className="min-w-0">
       <legend className={cx("mb-1 text-sm font-medium text-fg", hideLabel && "sr-only")}>{label}</legend>
-      <div className="inline-flex max-w-full flex-wrap rounded-lg border border-line bg-surface-2 p-0.5">
+      <div className="inline-flex max-w-full flex-wrap rounded-md border border-line bg-surface-2 p-0.5">
         {options.map((o) => {
           const active = o.value === value;
           return (
@@ -330,7 +330,7 @@ export function InfoTip({ label, children }: { label: string; children: ReactNod
         <span
           id={id}
           role="tooltip"
-          className="absolute bottom-full left-1/2 z-30 mb-1.5 w-64 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-lg border border-line-strong bg-surface-3 px-3 py-2 text-xs font-normal leading-relaxed text-fg shadow-lg"
+          className="absolute bottom-full left-1/2 z-30 mb-1.5 w-64 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-md border border-line-strong bg-surface-3 px-3 py-2 text-xs font-normal leading-relaxed text-fg shadow-lg"
         >
           {children}
         </span>

@@ -172,7 +172,7 @@ export function OverviewSection({ navigate }: { navigate: (id: SectionId) => voi
 
 function Stat({ label, value, sub }: { label: string; value: React.ReactNode; sub?: string }) {
   return (
-    <div className="min-w-0 rounded-lg border border-line bg-surface-2 p-3">
+    <div className="min-w-0 rounded-md border border-line bg-surface-2 p-3">
       <dt className="text-xs text-muted">{label}</dt>
       <dd className="num mt-1 truncate text-lg font-semibold text-fg">{value}</dd>
       {sub && <dd className="text-xs text-subtle">{sub}</dd>}

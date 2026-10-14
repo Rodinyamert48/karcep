@@ -18,7 +18,7 @@
 
 ## v0.2.0 — Tasarım sistemi, .krcp yedekleme, doğrulama (tamamlandı)
 - [x] shadcn/ui tarzı tasarım sistemi: Radix UI (Dialog/AlertDialog/Switch/Tabs) + class-variance-authority + clsx/tailwind-merge
-- [x] Lacivert/yeşil marka paleti (WCAG AA kontrast doğrulandı), "Sistem" tema seçeneği + canlı OS tema izleme
+- [x] Siyah/yeşil marka paleti, özgün sol gezinme ve logo işareti (WCAG AA kontrast doğrulandı), "Sistem" tema seçeneği + canlı OS tema izleme
 - [x] `.krcp` yedekleme/geri yükleme: doğrulama, önizleme, Değiştir/Birleştir stratejileri, atomik yazma + geri alma
 - [x] Hakkında ve Gizlilik: 5 sekmeli yapı (Hakkında, Gizlilik, Yedekleme, Kullanım Koşulları, Sürüm ve İletişim)
 - [x] Hesaplama motoruna "maliyet üzerine kâr oranı" (markup) eklendi, kâr marjından ayrıştırıldı

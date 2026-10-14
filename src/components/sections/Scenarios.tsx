@@ -287,7 +287,7 @@ function Assumptions({ values, name }: { values: CalcFormValues; name: string })
     items.push(["İndirilebilir KDV", v.vatDeductible ? "Evet" : "Hayır"]);
   }
   return (
-    <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 rounded-lg border border-line bg-surface-2 p-3 text-xs">
+    <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 rounded-md border border-line bg-surface-2 p-3 text-xs">
       {items.map(([k, val]) => (
         <div key={k} className="contents">
           <dt className="text-muted">{k}</dt>

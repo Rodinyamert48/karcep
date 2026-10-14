@@ -16,20 +16,20 @@ export const BASE_LABELS: Record<CommissionBase, string> = {
 export function StatusBanner({ result }: { result: CalcResult }) {
   if (result.status === "loss")
     return (
-      <div role="status" className="flex items-center gap-2 rounded-lg border border-danger/40 bg-danger-bg px-3 py-2 text-sm font-semibold text-danger">
+      <div role="status" className="flex items-center gap-2 rounded-md border border-danger/40 bg-danger-bg px-3 py-2 text-sm font-semibold text-danger">
         <TrendingDown className="size-4" aria-hidden="true" />
         ZARAR: Bu fiyatla her satışta tahminen {formatTRY(-result.profit)} kaybedersiniz.
       </div>
     );
   if (result.status === "breakeven")
     return (
-      <div role="status" className="flex items-center gap-2 rounded-lg border border-line-strong bg-surface-2 px-3 py-2 text-sm font-semibold text-fg">
+      <div role="status" className="flex items-center gap-2 rounded-md border border-line-strong bg-surface-2 px-3 py-2 text-sm font-semibold text-fg">
         <MinusCircle className="size-4" aria-hidden="true" />
         BAŞA BAŞ: Bu fiyatla kâr veya zarar yok.
       </div>
     );
   return (
-    <div role="status" className="flex items-center gap-2 rounded-lg border border-success/40 bg-success-bg px-3 py-2 text-sm font-semibold text-success">
+    <div role="status" className="flex items-center gap-2 rounded-md border border-success/40 bg-success-bg px-3 py-2 text-sm font-semibold text-success">
       <TrendingUp className="size-4" aria-hidden="true" />
       KÂR: Bu fiyatla satış başına tahminen {formatTRY(result.profit)} kazanırsınız.
     </div>
@@ -52,7 +52,7 @@ function Metric({
   emphasis?: boolean;
 }) {
   return (
-    <div className={cx("min-w-0 rounded-lg border border-line bg-surface-2 p-3", emphasis && "sm:col-span-2")}>
+    <div className={cx("min-w-0 rounded-md border border-line bg-surface-2 p-3", emphasis && "sm:col-span-2")}>
       <div className="flex items-center gap-1 text-xs font-medium text-muted">
         {label}
         <InfoTip label={label}>{info}</InfoTip>

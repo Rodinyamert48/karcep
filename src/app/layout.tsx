@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import "@fontsource-variable/geologica";
 import "./globals.css";
 
 const SITE_URL = "https://rodinyamert48.github.io/karcep/";
@@ -10,55 +11,37 @@ export const metadata: Metadata = {
     template: "%s · KârCep",
   },
   description:
-    "Türkiye'deki e-ticaret satıcıları için ücretsiz kâr, komisyon, KDV ve başa baş fiyatı hesaplayıcı. Veriler yalnızca tarayıcınızda saklanır, hiçbir sunucuya gönderilmez.",
+    "E-ticaret satıcıları için ücretsiz kâr, komisyon, KDV ve başa baş fiyatı hesaplayıcı. Veriler yalnızca tarayıcınızda saklanır.",
   applicationName: "KârCep",
-  keywords: ["e-ticaret", "kâr hesaplama", "komisyon hesaplama", "Trendyol komisyon", "Hepsiburada komisyon", "KDV hesaplama", "başa baş fiyatı"],
-  authors: [{ name: "KârCep" }],
+  keywords: ["e-ticaret", "kâr hesaplama", "komisyon hesaplama", "KDV hesaplama", "başa baş fiyatı"],
   alternates: { canonical: "./" },
   robots: { index: true, follow: true },
-  icons: {
-    icon: [{ url: "icon.svg", type: "image/svg+xml" }],
-  },
   openGraph: {
     type: "website",
     locale: "tr_TR",
     siteName: "KârCep",
     title: "KârCep — E-ticaret Kâr Hesaplayıcı",
-    description: "Ücretsiz, tarayıcıda çalışan e-ticaret kârlılık hesaplayıcısı. Hesap gerekmez, veriler yalnızca cihazınızda saklanır.",
+    description: "Ücretsiz, tarayıcıda çalışan kârlılık hesaplayıcısı. Hesap gerekmez; veriler cihazınızda kalır.",
     url: "./",
   },
   twitter: {
     card: "summary",
     title: "KârCep — E-ticaret Kâr Hesaplayıcı",
-    description: "Ücretsiz, tarayıcıda çalışan e-ticaret kârlılık hesaplayıcısı.",
+    description: "Ücretsiz, tarayıcıda çalışan kârlılık hesaplayıcısı.",
   },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-  ],
+  viewportFit: "cover",
+  themeColor: "#11100e",
+  colorScheme: "dark",
 };
-
-// Tema, ilk boyamadan önce uygulanır: kullanıcının kayıtlı tercihi "light"/"dark" ise onu,
-// yoksa ("system" veya hiç kayıt yoksa) işletim sisteminin tercihini kullanır.
-// Bu sayede yanlış temayla kısa süreliğine yanıp sönme (FOUC) oluşmaz.
-const themeScript = `try{
-var s=JSON.parse(localStorage.getItem("karcep:settings")||"null");
-var t=s&&s.theme;
-var resolved=(t==="light"||t==="dark")?t:(matchMedia("(prefers-color-scheme: light)").matches?"light":"dark");
-document.documentElement.dataset.theme=resolved;
-}catch(e){}`;
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="tr" data-theme="dark" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
+    <html lang="tr">
       <body className="antialiased">
         <noscript>
           <p style={{ padding: 16 }}>KârCep’i kullanmak için JavaScript’i etkinleştirin.</p>

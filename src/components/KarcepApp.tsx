@@ -1,21 +1,18 @@
 "use client";
 
 import { useEffect } from "react";
-import { AlertTriangle } from "lucide-react";
-import { useAppliedTheme } from "@/lib/theme";
 import { DataProvider, useData } from "@/state/DataProvider";
 import { useSection, type SectionId } from "@/state/navigation";
 import type { KeyValueStore } from "@/storage";
-import { AppShell } from "./AppShell";
+import { Shell } from "./Shell";
 import { FeedbackProvider, useFeedback } from "./ui/feedback";
-import { Notice } from "./ui/primitives";
-import { AboutSection } from "./sections/About";
-import { CalculatorSection } from "./sections/Calculator";
-import { HistorySection } from "./sections/HistorySection";
-import { OverviewSection } from "./sections/Overview";
-import { ProductsSection } from "./sections/Products";
-import { ScenariosSection } from "./sections/Scenarios";
-import { SettingsSection } from "./sections/SettingsSection";
+import { AboutPage } from "./pages/About";
+import { CalculatorPage } from "./pages/Calculator";
+import { HistoryPage } from "./pages/History";
+import { OverviewPage } from "./pages/Overview";
+import { ProductsPage } from "./pages/Products";
+import { ScenariosPage } from "./pages/Scenarios";
+import { SettingsPage } from "./pages/Settings";
 
 export function KarcepApp({ store }: { store?: KeyValueStore }) {
   return (
@@ -29,57 +26,53 @@ export function KarcepApp({ store }: { store?: KeyValueStore }) {
 
 function Root() {
   const [section, navigate] = useSection();
-  const { ready, data, loadIssues, saveError, persistent } = useData();
+  const { ready, loadIssues, saveError, persistent } = useData();
   const { toast } = useFeedback();
-
-  useAppliedTheme(data.settings.theme);
 
   useEffect(() => {
     if (saveError) toast("Veriler kaydedilemedi: tarayıcı depolama alanı dolu veya engellenmiş olabilir.", "error");
   }, [saveError, toast]);
 
+  const issues = [...(!persistent ? ["Tarayıcı yerel depolamaya izin vermiyor; veriler sayfa kapanınca kaybolur."] : []), ...loadIssues];
   const banner =
-    ready && (loadIssues.length > 0 || !persistent) ? (
-      <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
-        <Notice tone="warning" icon={<AlertTriangle className="size-4" />} title="Veri uyarısı">
-          <ul className="list-disc pl-4">
-            {!persistent && <li>Tarayıcı yerel depolamaya izin vermiyor; veriler sayfa kapanınca kaybolur.</li>}
-            {loadIssues.map((i) => (
-              <li key={i}>{i}</li>
-            ))}
-          </ul>
-        </Notice>
+    ready && issues.length > 0 ? (
+      <div role="alert" className="border-b border-warn/40 bg-raised">
+        <ul className="mx-auto max-w-6xl space-y-1 px-4 py-3 text-sm text-warn sm:px-6">
+          {issues.map((i) => (
+            <li key={i}>{i}</li>
+          ))}
+        </ul>
       </div>
     ) : null;
 
   return (
-    <AppShell current={section} onNavigate={navigate} banner={banner}>
+    <Shell current={section} onNavigate={navigate} banner={banner}>
       {ready ? (
-        <Section id={section} navigate={navigate} />
+        <Page id={section} navigate={navigate} />
       ) : (
-        <p className="py-20 text-center text-sm text-muted" role="status">
+        <p role="status" className="py-24 text-center text-sm text-subtle">
           Yükleniyor…
         </p>
       )}
-    </AppShell>
+    </Shell>
   );
 }
 
-function Section({ id, navigate }: { id: SectionId; navigate: (id: SectionId) => void }) {
+function Page({ id, navigate }: { id: SectionId; navigate: (id: SectionId) => void }) {
   switch (id) {
     case "hesaplayici":
-      return <CalculatorSection navigate={navigate} />;
+      return <CalculatorPage navigate={navigate} />;
     case "urunler":
-      return <ProductsSection navigate={navigate} />;
+      return <ProductsPage navigate={navigate} />;
     case "senaryolar":
-      return <ScenariosSection navigate={navigate} />;
+      return <ScenariosPage navigate={navigate} />;
     case "ayarlar":
-      return <SettingsSection navigate={navigate} />;
+      return <SettingsPage navigate={navigate} />;
     case "gecmis":
-      return <HistorySection navigate={navigate} />;
+      return <HistoryPage navigate={navigate} />;
     case "hakkinda":
-      return <AboutSection />;
+      return <AboutPage />;
     default:
-      return <OverviewSection navigate={navigate} />;
+      return <OverviewPage navigate={navigate} />;
   }
 }

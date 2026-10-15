@@ -1,47 +1,57 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type InputHTMLAttributes,
+  type ReactNode,
+  type SelectHTMLAttributes,
+} from "react";
 import * as RadixSwitch from "@radix-ui/react-switch";
-import { AlertCircle, Info } from "lucide-react";
-import { cx } from "./primitives";
+import { CircleHelp } from "lucide-react";
+import { cn } from "@/lib/cn";
 
-const inputBase =
-  "w-full min-w-0 rounded-md border bg-surface-2 px-3 text-sm text-fg placeholder:text-subtle transition-colors hover:border-line-strong focus:border-accent focus:outline-none focus-visible:outline-2 focus-visible:outline-focus disabled:opacity-60";
+const control =
+  "w-full min-w-0 rounded-md border bg-sunken px-3 text-[15px] text-fg placeholder:text-subtle transition-colors hover:border-line-strong focus:border-accent focus:outline-none disabled:opacity-50";
 
-export interface FieldShellProps {
+interface ShellProps {
   id: string;
   label: ReactNode;
   hint?: ReactNode;
   error?: string;
-  info?: ReactNode;
+  help?: ReactNode;
   required?: boolean;
+  optional?: boolean;
   className?: string;
   children: ReactNode;
 }
 
-export function FieldShell({ id, label, hint, error, info, required, className, children }: FieldShellProps) {
+/** Etiket + kontrol + ipucu/hata. Hata metni role="alert" ile duyurulur ve alana aria-describedby ile bağlanır. */
+export function FieldShell({ id, label, hint, error, help, required, optional, className, children }: ShellProps) {
   return (
-    <div className={cx("min-w-0", className)}>
-      <div className="mb-1 flex items-center gap-1">
-        <label htmlFor={id} className="text-sm font-medium text-fg">
+    <div className={cn("min-w-0", className)}>
+      <div className="mb-1.5 flex items-center gap-1.5">
+        <label htmlFor={id} className="text-sm text-muted">
           {label}
-          {required && (
-            <span className="text-accent" aria-hidden="true">
-              {" "}*
-            </span>
-          )}
           {required && <span className="sr-only"> (zorunlu)</span>}
         </label>
-        {info && <InfoTip label={typeof label === "string" ? label : "Bilgi"}>{info}</InfoTip>}
+        {required && (
+          <span aria-hidden="true" className="text-accent">
+            •
+          </span>
+        )}
+        {optional && <span className="text-xs text-subtle">isteğe bağlı</span>}
+        {help && <Help label={typeof label === "string" ? label : "Bilgi"}>{help}</Help>}
       </div>
       {children}
       {error ? (
-        <p id={`${id}-error`} className="mt-1 flex items-center gap-1 text-xs text-danger" role="alert">
-          <AlertCircle className="size-3.5 shrink-0" aria-hidden="true" />
+        <p id={`${id}-error`} role="alert" className="mt-1.5 text-[13px] text-loss">
           {error}
         </p>
       ) : hint ? (
-        <p id={`${id}-hint`} className="mt-1 text-xs text-subtle">
+        <p id={`${id}-hint`} className="mt-1.5 text-[13px] text-subtle">
           {hint}
         </p>
       ) : null}
@@ -55,9 +65,10 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   onValueChange: (v: string) => void;
   hint?: ReactNode;
   error?: string;
-  info?: ReactNode;
-  suffix?: string;
+  help?: ReactNode;
+  unit?: string;
   numeric?: boolean;
+  optional?: boolean;
   wrapperClassName?: string;
 }
 
@@ -67,43 +78,52 @@ export function TextField({
   onValueChange,
   hint,
   error,
-  info,
-  suffix,
+  help,
+  unit,
   numeric,
+  optional,
   wrapperClassName,
   id: idProp,
   required,
   className,
   ...rest
 }: TextFieldProps) {
-  const autoId = useId();
-  const id = idProp ?? autoId;
-  const describedBy = error ? `${id}-error` : hint ? `${id}-hint` : undefined;
+  const auto = useId();
+  const id = idProp ?? auto;
   return (
-    <FieldShell id={id} label={label} hint={hint} error={error} info={info} required={required} className={wrapperClassName}>
+    <FieldShell
+      id={id}
+      label={label}
+      hint={hint}
+      error={error}
+      help={help}
+      required={required}
+      optional={optional}
+      className={wrapperClassName}
+    >
       <div className="relative">
         <input
           id={id}
           value={value}
           onChange={(e) => onValueChange(e.target.value)}
           aria-invalid={error ? true : undefined}
-          aria-describedby={describedBy}
+          aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
           aria-required={required || undefined}
           inputMode={numeric ? "decimal" : undefined}
           autoComplete="off"
-          className={cx(
-            inputBase,
+          className={cn(
+            control,
             "h-10",
             numeric && "num text-right",
-            suffix && "pr-10",
-            error ? "border-danger" : "border-line",
+            unit && "pr-10",
+            error ? "border-loss" : "border-line",
             className,
           )}
           {...rest}
         />
-        {suffix && (
-          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-subtle" aria-hidden="true">
-            {suffix}
+        {unit && (
+          <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm text-subtle">
+            {unit}
           </span>
         )}
       </div>
@@ -115,10 +135,10 @@ export interface SelectFieldProps extends Omit<SelectHTMLAttributes<HTMLSelectEl
   label: ReactNode;
   value: string;
   onValueChange: (v: string) => void;
-  options: { value: string; label: string; disabled?: boolean }[];
+  options: { value: string; label: string }[];
   hint?: ReactNode;
   error?: string;
-  info?: ReactNode;
+  help?: ReactNode;
   wrapperClassName?: string;
 }
 
@@ -129,27 +149,27 @@ export function SelectField({
   options,
   hint,
   error,
-  info,
+  help,
   wrapperClassName,
   id: idProp,
   className,
   ...rest
 }: SelectFieldProps) {
-  const autoId = useId();
-  const id = idProp ?? autoId;
+  const auto = useId();
+  const id = idProp ?? auto;
   return (
-    <FieldShell id={id} label={label} hint={hint} error={error} info={info} className={wrapperClassName}>
+    <FieldShell id={id} label={label} hint={hint} error={error} help={help} className={wrapperClassName}>
       <select
         id={id}
         value={value}
         onChange={(e) => onValueChange(e.target.value)}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
-        className={cx(inputBase, "h-10 pr-8", error ? "border-danger" : "border-line", className)}
+        className={cn(control, "h-10 pr-9", error ? "border-loss" : "border-line", className)}
         {...rest}
       >
         {options.map((o) => (
-          <option key={o.value} value={o.value} disabled={o.disabled}>
+          <option key={o.value} value={o.value}>
             {o.label}
           </option>
         ))}
@@ -182,47 +202,44 @@ export function TextArea({
         maxLength={maxLength}
         value={value}
         onChange={(e) => onValueChange(e.target.value)}
-        className={cx(inputBase, "border-line py-2")}
+        className={cn(control, "border-line py-2")}
       />
     </FieldShell>
   );
 }
 
-/** Erişilebilir anahtar (switch). */
-export function Switch({
+/** Radix Switch tabanlı açma/kapama. Etiket tıklanabilir, açıklama aria-describedby ile bağlıdır. */
+export function Toggle({
   checked,
   onChange,
   label,
   description,
   id: idProp,
-  disabled,
 }: {
   checked: boolean;
   onChange: (v: boolean) => void;
   label: ReactNode;
   description?: ReactNode;
   id?: string;
-  disabled?: boolean;
 }) {
-  const autoId = useId();
-  const id = idProp ?? autoId;
+  const auto = useId();
+  const id = idProp ?? auto;
   return (
     <div className="flex items-start gap-3">
       <RadixSwitch.Root
         id={id}
         checked={checked}
         onCheckedChange={onChange}
-        disabled={disabled}
         aria-describedby={description ? `${id}-desc` : undefined}
-        className={cx(
-          "relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full border transition-colors disabled:opacity-50",
-          checked ? "border-accent bg-accent" : "border-line-strong bg-surface-3",
+        className={cn(
+          "relative mt-0.5 inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors",
+          checked ? "bg-accent" : "bg-line-strong",
         )}
       >
         <RadixSwitch.Thumb
-          className={cx(
-            "block size-3.5 rounded-full shadow transition-transform",
-            checked ? "translate-x-4 bg-on-accent" : "translate-x-0.5 bg-muted",
+          className={cn(
+            "block size-4 rounded-full transition-transform",
+            checked ? "translate-x-[18px] bg-on-accent" : "translate-x-0.5 bg-fg",
           )}
         />
       </RadixSwitch.Root>
@@ -231,7 +248,7 @@ export function Switch({
           {label}
         </label>
         {description && (
-          <p id={`${id}-desc`} className="text-xs text-subtle">
+          <p id={`${id}-desc`} className="mt-0.5 text-[13px] text-subtle">
             {description}
           </p>
         )}
@@ -240,33 +257,35 @@ export function Switch({
   );
 }
 
-/** Radyo grubu olarak çalışan bölümlü seçici. */
-export function Segmented<T extends string>({
+/** Radyo grubu olarak çalışan bölümlü seçim. */
+export function Choice<T extends string>({
   label,
   value,
   onChange,
   options,
   hideLabel,
+  className,
 }: {
   label: string;
   value: T;
   onChange: (v: T) => void;
-  options: { value: T; label: string; icon?: ReactNode }[];
+  options: { value: T; label: string }[];
   hideLabel?: boolean;
+  className?: string;
 }) {
   const name = useId();
   return (
-    <fieldset className="min-w-0">
-      <legend className={cx("mb-1 text-sm font-medium text-fg", hideLabel && "sr-only")}>{label}</legend>
-      <div className="inline-flex max-w-full flex-wrap rounded-md border border-line bg-surface-2 p-0.5">
+    <fieldset className={cn("min-w-0", className)}>
+      <legend className={cn("mb-1.5 text-sm text-muted", hideLabel && "sr-only")}>{label}</legend>
+      <div className="inline-flex max-w-full rounded-md border border-line bg-sunken p-0.5">
         {options.map((o) => {
           const active = o.value === value;
           return (
             <label
               key={o.value}
-              className={cx(
-                "flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-focus",
-                active ? "bg-accent font-semibold text-on-accent" : "text-muted hover:text-fg",
+              className={cn(
+                "cursor-pointer rounded-[5px] px-3 py-1.5 text-sm transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent",
+                active ? "bg-hover text-fg" : "text-muted hover:text-fg",
               )}
             >
               <input
@@ -277,7 +296,6 @@ export function Segmented<T extends string>({
                 onChange={() => onChange(o.value)}
                 className="sr-only"
               />
-              {o.icon}
               {o.label}
             </label>
           );
@@ -287,8 +305,11 @@ export function Segmented<T extends string>({
   );
 }
 
-/** Tıklama, odak veya üzerine gelme ile açılan erişilebilir bilgi balonu. */
-export function InfoTip({ label, children }: { label: string; children: ReactNode }) {
+/**
+ * Bilgi balonu: fareyle üzerine gelince, odaklanınca veya tıklayınca açılır;
+ * Escape, dışarı tıklama veya odak kaybıyla kapanır.
+ */
+export function Help({ label, children }: { label: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const id = useId();
   const ref = useRef<HTMLSpanElement>(null);
@@ -316,21 +337,19 @@ export function InfoTip({ label, children }: { label: string; children: ReactNod
         aria-label={`Bilgi: ${label}`}
         aria-expanded={open}
         aria-describedby={open ? id : undefined}
-        // Not toggle: fareyle üzerine gelmek zaten açar; tıklama (mouseenter'dan hemen sonra gelen
-        // click olayı) bunu kapatıp açmasın diye her zaman açık bırakır. Kapatma; Escape, dışarı
-        // tıklama, fareyi çekme veya odağın çıkmasıyla olur.
         onClick={() => setOpen(true)}
         onMouseEnter={() => setOpen(true)}
+        onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
-        className="rounded-full p-0.5 text-subtle hover:text-fg"
+        className="rounded-full text-subtle hover:text-fg"
       >
-        <Info className="size-3.5" aria-hidden="true" />
+        <CircleHelp className="size-3.5" aria-hidden="true" />
       </button>
       {open && (
         <span
           id={id}
           role="tooltip"
-          className="absolute bottom-full left-1/2 z-30 mb-1.5 w-64 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-md border border-line-strong bg-surface-3 px-3 py-2 text-xs font-normal leading-relaxed text-fg shadow-lg"
+          className="absolute bottom-full left-1/2 z-40 mb-2 w-64 max-w-[calc(100vw-2rem)] -translate-x-1/2 rounded-md border border-line-strong bg-hover px-3 py-2 text-[13px] leading-relaxed font-normal text-fg"
         >
           {children}
         </span>

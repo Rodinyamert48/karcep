@@ -11,20 +11,32 @@ KârCep, Türkiye'deki e-ticaret satıcılarının ürün maliyeti, pazaryeri ko
 
 | Bölüm | İçerik |
 | --- | --- |
-| Genel Bakış | Son hesaplama, kâr/marj/başa baş, son hesaplamalar, ürün özeti (hangi kayıtların dâhil edildiği belirtilir) |
-| Kâr Hesaplayıcı | Hızlı ve KDV ayrıştırmalı mod, anlık sonuç, ayrıntılı döküm, başa baş ve hedef (kâr/marj) fiyatı |
+| Genel Bakış | Son hesap (kâr, marj, satış ve başa baş fiyatı), son hesaplar, ürünlerin marja göre sıralı listesi, yedek hatırlatması |
+| Kâr Hesaplayıcı | Hızlı ve KDV ayrıştırmalı mod, anlık sonuç, satış fiyatının kalemlere dağılımı grafiği, ayrıntılı döküm, başa baş ve hedef (kâr/marj) fiyatı |
 | Ürünlerim | Ekle, düzenle, sil (onaylı), üründen yeni hesaplama, ada göre arama, kâr/fiyat sıralama |
 | Fiyat Senaryoları | Aynı varsayımlarla 8'e kadar satış fiyatını karşılaştırma; başa başa uzaklık ve güvenlik payı |
-| Komisyon ve Gider Ayarları | Pazaryeri/kategori komisyon profilleri (kaynak + doğrulama tarihi), pazaryeri varsayılanları, varsayılan giderler, tema |
+| Komisyon ve Gider Ayarları | Pazaryeri/kategori komisyon profilleri (kaynak + doğrulama tarihi), pazaryeri varsayılanları, yeni hesap varsayılanları, tüm verileri silme |
 | Hesaplama Geçmişi | Görüntüleme, yeniden açma, silme, tümünü temizleme, CSV dışa aktarma (UTF-8 BOM, `;` ayraç) |
-| Hakkında ve Gizlilik | 5 sekme: Uygulama Hakkında, Gizlilik ve Veri Saklama, **Yedekleme ve Geri Yükleme (.krcp)**, Kullanım Koşulları, Sürüm ve İletişim |
+| Hakkında ve Gizlilik | 5 sekme: Uygulama, Gizlilik, **Yedekleme (.krcp)**, Kullanım koşulları, Sürüm ve iletişim |
 
 ## Teknolojiler
 
 Next.js 16 (App Router, statik dışa aktarım `output: "export"`), React 19, TypeScript, Tailwind CSS 4, Lucide React,
 [Radix UI](https://www.radix-ui.com/) (Dialog, AlertDialog, Switch, Tabs — erişilebilir, stilsiz temel bileşenler;
 `class-variance-authority` + `clsx` + `tailwind-merge` ile shadcn/ui tarzında Tailwind üzerine giydirilmiştir),
-Vitest + React Testing Library. Grafik kütüphanesi kullanılmadı (senaryo çubukları saf CSS; ağır bir kütüphane gerekmedi).
+Vitest + React Testing Library. Grafik kütüphanesi kullanılmadı (dağılım ve senaryo çubukları saf CSS).
+
+### Arayüz
+
+- **Tek tema, koyu:** sıcak tonlu koyu zemin, kırık beyaz metin, tek yeşil vurgu; yüzeyler gölgeyle değil ton farkıyla ayrılır.
+  Tüm metin renkleri WCAG AA kontrastını karşılar.
+- **Yazı tipi:** Geologica (değişken), `@fontsource-variable/geologica` ile uygulamayla birlikte sunulur — üçüncü taraf bir
+  yazı tipi servisine istek yapılmaz. Türkçe karakterler, doğru çizilmiş ₺ simgesi ve tabular rakamlar için seçildi.
+- **Gezinme:** masaüstünde üst çubukta yatay menü; telefonda başparmakla erişilen alt sekme çubuğu (Genel, Hesapla, Ürünler,
+  Senaryolar) ve diğer bölümler için alttan açılan "Diğer" sayfası.
+- **Satış fiyatının dağılımı:** müşterinin ödediği fiyatın maliyet, komisyon, kargo/paketleme, diğer giderler, KDV ve kâra nasıl
+  bölündüğünü gösteren yığılmış çubuk. Renkler sabit sırada ve renk körlüğü için doğrulandı; her kalem lejantta tutar ve payla
+  yazılıdır (renk tek başına anlam taşımaz). Zararda satış fiyatını aşan gider taralı ayrı bir bölge olarak gösterilir.
 
 ## Kurulum ve komutlar
 
@@ -49,8 +61,8 @@ src/
   engine/      Hesaplama motoru — React/Next/tarayıcıdan bağımsız saf TypeScript (+ testleri)
   storage/     Yerel veri katmanı: şema sürümü, migrasyon, .krcp yedekleme, atomik yazma, CSV (+ testleri)
   state/       React veri bağlamı (DataProvider) ve hash tabanlı bölüm yönlendirmesi
-  lib/         Biçimlendirme (tr-TR, TRY), tema çözümleme, tarayıcı yardımcıları, cn() birleştirici
-  components/  Arayüz: kabuk, bölümler, shadcn/ui tarzı ortak bileşenler (ui/)
+  lib/         Biçimlendirme (tr-TR, TRY), tarayıcı yardımcıları, cn() birleştirici
+  components/  Arayüz: Shell (gezinme), pages/ (yedi bölüm), ui/ (buton, form alanları, bildirim, yerleşim), money (sonuç ve grafik)
   app/         Next.js giriş noktası (layout, sayfa, global stiller, sitemap)
 ```
 

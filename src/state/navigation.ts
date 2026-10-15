@@ -3,13 +3,13 @@
 import { useCallback, useSyncExternalStore } from "react";
 
 export const SECTIONS = [
-  { id: "genel-bakis", label: "Genel Bakış" },
-  { id: "hesaplayici", label: "Kâr Hesaplayıcı" },
-  { id: "urunler", label: "Ürünlerim" },
-  { id: "senaryolar", label: "Fiyat Senaryoları" },
-  { id: "ayarlar", label: "Komisyon ve Gider Ayarları" },
-  { id: "gecmis", label: "Hesaplama Geçmişi" },
-  { id: "hakkinda", label: "Hakkında ve Gizlilik" },
+  { id: "genel-bakis", label: "Genel Bakış", short: "Genel" },
+  { id: "hesaplayici", label: "Kâr Hesaplayıcı", short: "Hesapla" },
+  { id: "urunler", label: "Ürünlerim", short: "Ürünler" },
+  { id: "senaryolar", label: "Fiyat Senaryoları", short: "Senaryolar" },
+  { id: "ayarlar", label: "Komisyon ve Gider Ayarları", short: "Ayarlar" },
+  { id: "gecmis", label: "Hesaplama Geçmişi", short: "Geçmiş" },
+  { id: "hakkinda", label: "Hakkında ve Gizlilik", short: "Hakkında" },
 ] as const;
 
 export type SectionId = (typeof SECTIONS)[number]["id"];

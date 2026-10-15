@@ -50,6 +50,7 @@ export interface Settings {
   defaultSaleVatRate: string;
   defaultCostVatRate: string;
   defaultServiceVatRate: string;
+  /** v0.3.0 itibarıyla arayüz yalnızca koyu temadır; alan eski yedeklerle uyumluluk için saklanır, kullanılmaz. */
   theme: "dark" | "light" | "system";
   /** Son başarılı ".krcp" yedeği oluşturulma zamanı (ISO-8601); hiç yedek alınmadıysa null. */
   lastBackupAt: string | null;

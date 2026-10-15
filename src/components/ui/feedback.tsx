@@ -2,10 +2,8 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
-import { AlertTriangle, CheckCircle2, Info, X, XCircle } from "lucide-react";
-import { Button, cx } from "./primitives";
-
-/* ---------- Bildirimler (toast) ---------- */
+import { Check, CircleAlert, Info, X } from "lucide-react";
+import { Button } from "./button";
 
 type ToastTone = "success" | "error" | "info";
 interface Toast {
@@ -29,6 +27,7 @@ interface FeedbackApi {
 
 const FeedbackContext = createContext<FeedbackApi | null>(null);
 
+
 export function FeedbackProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [dialog, setDialog] = useState<(ConfirmOptions & { resolve: (v: boolean) => void }) | null>(null);
@@ -39,7 +38,7 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
   const toast = useCallback(
     (message: string, tone: ToastTone = "success") => {
       const id = ++counter.current;
-      setToasts((t) => [...t.slice(-3), { id, tone, message }]);
+      setToasts((t) => [...t.slice(-2), { id, tone, message }]);
       setTimeout(() => dismiss(id), tone === "error" ? 7000 : 4000);
     },
     [dismiss],
@@ -65,24 +64,21 @@ export function FeedbackProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         aria-live="polite"
-        aria-atomic="false"
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex flex-col items-center gap-2 p-4 sm:items-end"
+        className="pointer-events-none fixed inset-x-0 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-50 flex flex-col items-center gap-2 px-4 lg:bottom-6 lg:items-end lg:px-6"
       >
         {toasts.map((t) => (
           <div
             key={t.id}
             role={t.tone === "error" ? "alert" : "status"}
-            className={cx(
-              "pointer-events-auto flex w-full max-w-sm items-start gap-2 rounded-md border bg-surface-3 px-3 py-2.5 text-sm text-fg shadow-xl",
-              t.tone === "success" && "border-success/40",
-              t.tone === "error" && "border-danger/50",
-              t.tone === "info" && "border-info/40",
-            )}
+            className="pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-md border border-line-strong bg-hover py-2.5 pr-2 pl-3 text-sm text-fg"
           >
-            {t.tone === "success" && <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" aria-hidden="true" />}
-            {t.tone === "error" && <XCircle className="mt-0.5 size-4 shrink-0 text-danger" aria-hidden="true" />}
+            {t.tone === "success" && <Check className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden="true" />}
+            {t.tone === "error" && <CircleAlert className="mt-0.5 size-4 shrink-0 text-loss" aria-hidden="true" />}
             {t.tone === "info" && <Info className="mt-0.5 size-4 shrink-0 text-info" aria-hidden="true" />}
-            <span className="min-w-0 flex-1">{t.message}</span>
+            <span className="min-w-0 flex-1">
+              {t.tone === "error" && <span className="sr-only">Hata: </span>}
+              {t.message}
+            </span>
             <button
               type="button"
               onClick={() => dismiss(t.id)}
@@ -105,8 +101,6 @@ export function useFeedback(): FeedbackApi {
   return ctx;
 }
 
-/* ---------- Onay penceresi (Radix AlertDialog) ---------- */
-
 function ConfirmDialog({
   title,
   message,
@@ -116,18 +110,11 @@ function ConfirmDialog({
   onClose,
 }: ConfirmOptions & { onClose: (v: boolean) => void }) {
   return (
-    <AlertDialog.Root
-      open
-      onOpenChange={(open) => {
-        if (!open) onClose(false);
-      }}
-    >
+    <AlertDialog.Root open onOpenChange={(open) => !open && onClose(false)}>
       <AlertDialog.Portal>
-        <AlertDialog.Overlay className="k-overlay fixed inset-0 z-50 bg-black/60" />
+        <AlertDialog.Overlay className="k-overlay fixed inset-0 z-50 bg-black/70" />
         <AlertDialog.Content
-          className="k-dialog fixed top-1/2 left-1/2 z-50 w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-md border border-line-strong bg-surface p-5 shadow-2xl focus:outline-none"
-          // Radix odağı ilk etkileşimli öğeye taşır; yanlışlıkla onaylamayı önlemek için
-          // "Vazgeç" önce gelir (bkz. JSX sırası), bu yüzden varsayılan odak güvenlidir.
+          className="k-dialog fixed inset-x-4 bottom-4 z-50 mx-auto max-w-md rounded-lg border border-line-strong bg-raised p-5 focus:outline-none sm:top-1/2 sm:bottom-auto sm:-translate-y-1/2"
           onOpenAutoFocus={(e) => {
             const cancel = (e.currentTarget as HTMLElement).querySelector<HTMLElement>("[data-cancel]");
             if (cancel) {
@@ -136,18 +123,9 @@ function ConfirmDialog({
             }
           }}
         >
-          <div className="flex items-start gap-3">
-            {danger && (
-              <span className="rounded-full bg-danger-bg p-2 text-danger" aria-hidden="true">
-                <AlertTriangle className="size-5" />
-              </span>
-            )}
-            <div className="min-w-0">
-              <AlertDialog.Title className="text-base font-semibold text-fg">{title}</AlertDialog.Title>
-              <AlertDialog.Description className="mt-1 text-sm text-muted">{message}</AlertDialog.Description>
-            </div>
-          </div>
-          <div className="mt-5 flex flex-wrap justify-end gap-2">
+          <AlertDialog.Title className="text-lg font-semibold text-fg">{title}</AlertDialog.Title>
+          <AlertDialog.Description className="mt-2 text-sm leading-relaxed text-muted">{message}</AlertDialog.Description>
+          <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <AlertDialog.Cancel asChild>
               <Button data-cancel onClick={() => onClose(false)}>
                 {cancelLabel}
